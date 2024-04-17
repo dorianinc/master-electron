@@ -20,7 +20,7 @@
     "electron": "^29.2.0",
     "nodemon": "^3.1.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "electron-window-state": "^5.0.3"
+  }
 }
-
-

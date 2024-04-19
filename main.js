@@ -10,7 +10,7 @@ function createWindow() {
     defaultWidth: 1000,
     defaultHeight: 800,
   });
-  
+
   mainWindow = new BrowserWindow({
     x: mainWindowState.x,
     y: mainWindowState.y,
@@ -23,15 +23,14 @@ function createWindow() {
   });
   let wc = mainWindow.webContents;
   mainWindowState.manage(mainWindow);
-  mainWindow.loadFile("./index.html")
-  
-  wc.on("media-started-playing", () => {
-    console.log("video started playing")
-  })
+  mainWindow.loadFile("./index.html");
 
-  wc.on("media-paused", () => {
-    console.log("video paused")
-  })
+  wc.on("context-menu", (e, params) => {
+    let selectedText = params.selectionText
+    console.log(`User select text: ${selectedText}`);
+    console.log("selectioncan be copied: ", params.editFlags.canCopy)
+    wc.executeJavaScript(`alert("${selectedText}")`)
+  });
 
   mainWindow.on("closed", () => {
     mainWindow = null;

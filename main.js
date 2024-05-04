@@ -1,11 +1,23 @@
-// Modules
-const { app, BrowserWindow, webContents } = require("electron");
+const { app, BrowserWindow, session } = require("electron");
 const windowStateKeeper = require("electron-window-state");
 
 let mainWindow;
 
-// Create a new BrowserWindow when `app` is ready
 function createWindow() {
+  let sesh = session.defaultSession;
+
+  let getGalletas = () => {
+    sesh.cookies
+      .get({})
+      .then((galleta) => {
+        console.log("🖥️  galleta: ", galleta);
+      })
+      .catch((err) => {
+        console.log("🖥️  err: ", err);
+      });
+  };
+
+
   let mainWindowState = windowStateKeeper({
     defaultWidth: 1000,
     defaultHeight: 800,
@@ -21,16 +33,14 @@ function createWindow() {
     },
     alwaysOnTop: true,
   });
-  let wc = mainWindow.webContents;
-  mainWindowState.manage(mainWindow);
-  mainWindow.loadFile("./index.html");
 
-  wc.on("context-menu", (e, params) => {
-    let selectedText = params.selectionText
-    console.log(`User select text: ${selectedText}`);
-    console.log("selectioncan be copied: ", params.editFlags.canCopy)
-    wc.executeJavaScript(`alert("${selectedText}")`)
-  });
+  mainWindowState.manage(mainWindow);
+  mainWindow.loadURL("https://github.com")
+  // mainWindow.loadFile("./index.html");
+
+  mainWindow.webContents.on("did-finish-load", e => {
+    getGalletas()
+  })
 
   mainWindow.on("closed", () => {
     mainWindow = null;

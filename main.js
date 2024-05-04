@@ -1,11 +1,7 @@
-const { app,BrowserWindow, Tray, Menu, nativeImage } = require("electron");
+const { app, BrowserWindow } = require("electron");
 const windowStateKeeper = require("electron-window-state");
 
-let mainWindow, tray;
-
-// function createTray() {
-//   tray = new Tray("trayTemplate@2x.png");
-// }
+let mainWindow;
 
 function createWindow() {
   let mainWindowState = windowStateKeeper({
@@ -19,26 +15,16 @@ function createWindow() {
     width: mainWindowState.width,
     height: mainWindowState.height,
     webPreferences: {
+      contextIsolation: false,
       nodeIntegration: true,
     },
+    
     alwaysOnTop: true,
   });
 
-  const icon = nativeImage.createFromPath('trayTemplate@2x.png')
-  tray = new Tray(icon);
-
-  const contextMenu = Menu.buildFromTemplate([
-    { label: "Item1", type: "radio" },
-    { label: "Item2", type: "radio" },
-    { label: "Item3", type: "radio", checked: true },
-    { label: "Item4", type: "radio" },
-  ]);
-
-  tray.setToolTip("This is my application.");
-  tray.setContextMenu(contextMenu);
-
   mainWindowState.manage(mainWindow);
-  mainWindow.loadFile("index.html");
+  mainWindow.loadFile("./index.html");
+  mainWindow.webContents.openDevTools()
 
   mainWindow.on("closed", () => {
     mainWindow = null;

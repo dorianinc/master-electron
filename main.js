@@ -1,23 +1,13 @@
-const { app, BrowserWindow, session } = require("electron");
+const { app,BrowserWindow, Tray, Menu, nativeImage } = require("electron");
 const windowStateKeeper = require("electron-window-state");
 
-let mainWindow;
+let mainWindow, tray;
+
+// function createTray() {
+//   tray = new Tray("trayTemplate@2x.png");
+// }
 
 function createWindow() {
-  let sesh = session.defaultSession;
-
-  let getGalletas = () => {
-    sesh.cookies
-      .get({})
-      .then((galleta) => {
-        console.log("🖥️  galleta: ", galleta);
-      })
-      .catch((err) => {
-        console.log("🖥️  err: ", err);
-      });
-  };
-
-
   let mainWindowState = windowStateKeeper({
     defaultWidth: 1000,
     defaultHeight: 800,
@@ -34,13 +24,21 @@ function createWindow() {
     alwaysOnTop: true,
   });
 
-  mainWindowState.manage(mainWindow);
-  mainWindow.loadURL("https://github.com")
-  // mainWindow.loadFile("./index.html");
+  const icon = nativeImage.createFromPath('trayTemplate@2x.png')
+  tray = new Tray(icon);
 
-  mainWindow.webContents.on("did-finish-load", e => {
-    getGalletas()
-  })
+  const contextMenu = Menu.buildFromTemplate([
+    { label: "Item1", type: "radio" },
+    { label: "Item2", type: "radio" },
+    { label: "Item3", type: "radio", checked: true },
+    { label: "Item4", type: "radio" },
+  ]);
+
+  tray.setToolTip("This is my application.");
+  tray.setContextMenu(contextMenu);
+
+  mainWindowState.manage(mainWindow);
+  mainWindow.loadFile("index.html");
 
   mainWindow.on("closed", () => {
     mainWindow = null;
